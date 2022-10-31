@@ -149,6 +149,7 @@ export interface Props {
   virtual?: boolean;
   orientation?: 'vertical' | 'horizontal' | 'both';
   cols?: number;
+  focusVisible?: boolean;
 }
 
 /**
@@ -175,6 +176,7 @@ export const useListNavigation = <RT extends ReferenceType = ReferenceType>(
     disabledIndices = undefined,
     orientation = 'vertical',
     cols = 1,
+    focusVisible,
   }: Props = {
     listRef: {current: []},
     activeIndex: null,
@@ -238,7 +240,11 @@ export const useListNavigation = <RT extends ReferenceType = ReferenceType>(
         if (virtual) {
           setActiveId(listRef.current[indexRef.current]?.id);
         } else {
-          listRef.current[indexRef.current]?.focus({preventScroll: true});
+          listRef.current[indexRef.current]?.focus({
+            preventScroll: true,
+            // @ts-expect-error
+            focusVisible: focusVisible,
+          });
         }
       });
     },
@@ -378,7 +384,10 @@ export const useListNavigation = <RT extends ReferenceType = ReferenceType>(
         onOpenChange(false);
 
         if (isHTMLElement(refs.domReference.current)) {
-          refs.domReference.current.focus();
+          refs.domReference.current.focus({
+            // @ts-expect-error
+            focusVisible,
+          });
         }
 
         return;
@@ -695,7 +704,11 @@ export const useListNavigation = <RT extends ReferenceType = ReferenceType>(
           }
         },
         onClick: ({currentTarget}) =>
-          currentTarget.focus({preventScroll: true}), // Safari
+          currentTarget.focus({
+            preventScroll: true,
+            // @ts-expect-error
+            focusVisible,
+          }), // Safari
         ...(focusItemOnHover && {
           onMouseMove({currentTarget}) {
             const target = currentTarget as HTMLButtonElement | null;
@@ -714,7 +727,11 @@ export const useListNavigation = <RT extends ReferenceType = ReferenceType>(
               onNavigate(null);
               if (!virtual) {
                 requestAnimationFrame(() => {
-                  refs.floating.current?.focus({preventScroll: true});
+                  refs.floating.current?.focus({
+                    preventScroll: true,
+                    // @ts-expect-error
+                    focusVisible
+                  });
                 });
               }
             }
@@ -743,5 +760,6 @@ export const useListNavigation = <RT extends ReferenceType = ReferenceType>(
     focusItem,
     onNavigate,
     onOpenChange,
+    focusVisible,
   ]);
 };
